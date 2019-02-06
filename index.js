@@ -10,12 +10,12 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // Fetch to populate Page 1
   const fetchTheMonsters = () => {
-    return fetch("http://localhost:3000/monsters")
+    return fetch("http://localhost:3000/monsters/?_limit=50&_page=1")
     .then(response => response.json())
     .then(data => {
-      const fiftyMonsters = data.slice(0, 50)
+      // const fiftyMonsters = data.slice(0, 50)
       monsterContainer.dataset.id = 0;
-      showFiftyMonsters(fiftyMonsters);
+      showFiftyMonsters(data);
     })
   }
 
@@ -78,21 +78,19 @@ document.addEventListener("DOMContentLoaded", function(){
 
   const forwardCallback = event => {
     if (lastPage === true) {
+      alert("You are on the last page.");
       return
     }
     monsterContainer.dataset.id = parseInt(monsterContainer.dataset.id) + 1
-    const start = parseInt(monsterContainer.dataset.id) * 50
-    const end = start + 50
 
-    fetch("http://localhost:3000/monsters")
+    fetch(`http://localhost:3000/monsters/?_limit=50&_page=${parseInt(monsterContainer.dataset.id)+1}`)
     .then(response => response.json())
     .then(data => {
-      const fiftyMonsters = data.slice(start, end)
 
-      if (fiftyMonsters.length < 50) {
+      if (data.length < 50) {
         lastPage = true;
       }
-      showFiftyMonsters(fiftyMonsters);
+      showFiftyMonsters(data);
     })
   }
   const addEventToForward = () => {
@@ -101,20 +99,16 @@ document.addEventListener("DOMContentLoaded", function(){
 
   const backCallback = event => {
     if (monsterContainer.dataset.id === "0") {
+      alert("You are already on the first page.")
       return
     } else if (lastPage === true) {
       lastPage = false;
     }
     monsterContainer.dataset.id = parseInt(monsterContainer.dataset.id) - 1
-    const start = parseInt(monsterContainer.dataset.id) * 50
-    const end = start + 50
 
-    fetch("http://localhost:3000/monsters")
+    fetch(`http://localhost:3000/monsters/?_limit=50&_page=${parseInt(monsterContainer.dataset.id)+1}`)
     .then(response => response.json())
-    .then(data => {
-      const fiftyMonsters = data.slice(start, end)
-      showFiftyMonsters(fiftyMonsters);
-    })
+    .then(data => {showFiftyMonsters(data)})
   }
   const addEventToBackward = () => {
     back.addEventListener("click", backCallback)
